@@ -1,8 +1,7 @@
 package com.example.demoaws.mq;
 
-import com.example.demoaws.secrets.Secrets;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -13,8 +12,14 @@ import org.springframework.jms.core.JmsTemplate;
 @Configuration
 public class JmsConfig {
 
-    @Autowired
-    private Secrets secrets;
+    @Value("${spring.activemq.broker-url}")
+    private String brokerUrl;
+
+    @Value("${spring.activemq.user}")
+    private String brokerUser;
+
+    @Value("${spring.activemq.password}")
+    private String brokerPassword;
 
     @Bean
     public CachingConnectionFactory cachingConnectionFactory() {
@@ -28,10 +33,8 @@ public class JmsConfig {
 
     @Bean
     public ActiveMQConnectionFactory activeMQConnectionFactory() {
-        final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(
-                secrets.getBrokerUser(),
-                secrets.getBrokerPassword(),
-                secrets.getBrokerUrl());
+        final ActiveMQConnectionFactory activeMQConnectionFactory =
+                new ActiveMQConnectionFactory(brokerUser, brokerPassword, brokerUrl);
         activeMQConnectionFactory.setTrustAllPackages(true);
         return activeMQConnectionFactory;
     }
