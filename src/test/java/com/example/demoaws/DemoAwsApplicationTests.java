@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -21,15 +22,16 @@ class DemoAwsApplicationTests {
 
     @Test
     public void testRequest() throws Exception {
-        MvcResult result = this.mockMvc.perform(post("/handle")
+        MvcResult result = mockMvc.perform(post("/handle")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("test"))
+                .andExpect(request().asyncStarted())
                 .andReturn();
         Assertions.assertTrue(mockMvc.perform(asyncDispatch(result))
                 .andReturn()
                 .getResponse()
                 .getContentAsString()
-                .matches("[-+]?\\d+"));
+                .matches("\\d+"));
     }
 
 }

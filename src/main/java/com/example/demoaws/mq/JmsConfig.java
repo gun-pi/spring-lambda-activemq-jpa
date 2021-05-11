@@ -1,48 +1,28 @@
 package com.example.demoaws.mq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 
 
 @Configuration
 public class JmsConfig {
 
-    @Value("${spring.activemq.broker-url}")
-    private String brokerUrl;
-
-    @Value("${spring.activemq.user}")
-    private String brokerUser;
-
-    @Value("${spring.activemq.password}")
-    private String brokerPassword;
-
-    @Bean
-    public CachingConnectionFactory cachingConnectionFactory() {
-        return new CachingConnectionFactory(activeMQConnectionFactory());
-    }
+    private static final String BROKER_USER = "activemq";
+    private static final String BROKER_PASSWORD = "exampleexample";
+    private static final String BROKER_URL =
+            "ssl://b-82646c3d-9ad4-4a2a-be59-a244daa6e033-1.mq.eu-central-1.amazonaws.com:61617";
 
     @Bean
     public JmsTemplate jmsTemplate() {
-        return new JmsTemplate(cachingConnectionFactory());
+        return new JmsTemplate(activeMQConnectionFactory());
     }
 
     @Bean
     public ActiveMQConnectionFactory activeMQConnectionFactory() {
         final ActiveMQConnectionFactory activeMQConnectionFactory =
-                new ActiveMQConnectionFactory(brokerUser, brokerPassword, brokerUrl);
-        activeMQConnectionFactory.setTrustAllPackages(true);
+                new ActiveMQConnectionFactory(BROKER_USER, BROKER_PASSWORD, BROKER_URL);
         return activeMQConnectionFactory;
-    }
-
-    @Bean
-    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(activeMQConnectionFactory());
-        return factory;
     }
 }

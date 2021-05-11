@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
 import java.util.function.UnaryOperator;
@@ -18,11 +17,10 @@ public class DemoAwsApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger(DemoAwsApplication.class);
 
-    @Autowired
-    private JmsTemplate jmsTemplate;
+    private static final String BROKER_QUEUE = "queue";
 
     @Autowired
-    private Environment environment;
+    private JmsTemplate jmsTemplate;
 
     @Autowired
     private DocumentRepository documentRepository;
@@ -34,10 +32,10 @@ public class DemoAwsApplication {
 
             String message;
             try {
-                jmsTemplate.convertAndSend(environment.getProperty("destination"), input);
-                message = (String) jmsTemplate.receiveAndConvert(environment.getProperty("destination"));
+                jmsTemplate.convertAndSend(BROKER_QUEUE, input);
+                message = (String) jmsTemplate.receiveAndConvert(BROKER_QUEUE);
             } catch (Exception e) {
-                LOG.info("Exception occurred during interaction with JMS. ", e);
+                LOG.error("Exception occurred during interaction with JMS. ", e);
                 throw new RuntimeException(e);
             }
 
@@ -46,7 +44,7 @@ public class DemoAwsApplication {
                 final DocumentEntity documentEntity = new DocumentEntity(message);
                 id = documentRepository.save(documentEntity).getId().toString();
             } catch (Exception e) {
-                LOG.info("Exception occurred during interaction with database. ", e);
+                LOG.error("Exception occurred during interaction with database. ", e);
                 throw new RuntimeException(e);
             }
 

@@ -10,8 +10,7 @@ import java.time.ZonedDateTime;
 public class DocumentEntity {
 
     @Id
-    @SequenceGenerator(name = "seq", sequenceName = "oracle_seq")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
