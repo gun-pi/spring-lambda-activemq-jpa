@@ -70,3 +70,5 @@ task packageLight(type: Zip) {
     from compileJava
     from processResources
 }
+
+build.dependsOn packageLight, packageLibs
